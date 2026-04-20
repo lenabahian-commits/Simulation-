@@ -403,3 +403,125 @@ const App = {
         document.getElementById('grand-total').innerText = `$${(total * this.discount).toFixed(2)}`;
         document.getElementById('item-count').innerText = `${count} ITEMS`;
     },
+    applyPromo() {
+        if(document.getElementById('promo-input').value.toUpperCase() === 'FRESH20') {
+            this.discount = 0.8; this.updateUI(); this.notify("20% Discount!");
+        } else { this.notify("Invalid Code", true); }
+    },
+    buyNow(id) { this.cart = {}; this.addToCart(id); this.placeOrder(); },
+    placeOrder() {
+        const name = document.getElementById('cust-name').value;
+        const pay = document.getElementById('payment-method').value;
+        if(!name || !pay || Object.keys(this.cart).length === 0) { alert("Complete details first!"); return; }
+
+        document.getElementById('order-branch').innerText = document.getElementById('branch-select').value;
+
+        const qrContainer = document.getElementById('qr-container');
+        const qrImg = document.getElementById('qr-img');
+        qrContainer.style.display = 'none';
+
+        if(pay.includes("GCash") || pay.includes("Maya") || pay.includes("PayPal")) {
+            qrContainer.style.display = 'flex';
+            const qrData = pay.includes("PayPal") ? "https://www.paypal.com/paypalme/FreshBites" : "09123456789";
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+        }
+      
+        document.getElementById('order-id-display').innerText = "Order ID: #FBK-" + Math.floor(Math.random()*9000);
+        
+        let sumHtml = '<b>Your Order:</b><br>';
+        let sub = 0;
+        Object.entries(this.cart).forEach(([id, qty]) => {
+            const item = this.menu.find(m => m.id == id);
+            item.stock -= qty; 
+            sumHtml += `<div>${qty}x ${item.name} - $${(item.price*qty).toFixed(2)}</div>`;
+            sub += item.price * qty;
+        });
+
+        this.totalRevenue += (sub * this.discount);
+        this.totalOrders++;
+        document.getElementById('adm-sales').innerText = `$${this.totalRevenue.toFixed(2)}`;
+        document.getElementById('adm-orders').innerText = this.totalOrders;
+
+        document.getElementById('order-summary-list').innerHTML = sumHtml + `<hr><b>Total: $${(sub*this.discount).toFixed(2)}</b>`;
+        document.getElementById('orderModal').style.display = 'flex';
+        this.renderMenu(); 
+        this.runProcess(10);
+      },
+    runProcess(sec) {
+        let t = sec;
+        const fill = document.getElementById('p-fill');
+        const timerText = document.getElementById('timer');
+        const status = document.getElementById('status-title');
+        const interval = setInterval(() => {
+            t--;
+            timerText.innerText = `00:${t < 10 ? '0' + t : t}`;
+            fill.style.width = ((sec - t) / sec * 100) + "%";
+            if(t <= 0) { clearInterval(interval); status.innerText = "Ready for Pickup! 🛍️"; }
+        }, 1000);
+      },
+    closeAndClear() { 
+        this.cart = {}; 
+        this.saveCart(); 
+        document.getElementById('orderModal').style.display = 'none';
+        this.updateUI();
+    },
+    notify(msg) {
+        const n = document.getElementById('notification');
+        n.innerText = msg; n.classList.add('show');
+        setTimeout(() => n.classList.remove('show'), 2000);
+    }
+};
+App.init();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+// Backend Configuration
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "fresh-bites-kitchen.firebaseapp.com",
+    databaseURL: "https://fresh-bites-kitchen-default-rtdb.firebaseio.com",
+    projectId: "fresh-bites-kitchen",
+    storageBucket: "fresh-bites-kitchen.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef12345"
+};
+
+// Initialize Backend
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Injecting Database Logic into your existing functions
+const OriginalOrder = App.placeOrder;
+App.placeOrder = function() {
+    OriginalOrder.apply(this); // Run your original code first
+
+    // Save to Database
+    const orderData = {
+        name: document.getElementById('cust-name').value,
+        branch: document.getElementById('branch-select').value,
+        items: this.cart,
+        total: document.getElementById('grand-total').innerText,
+        date: new Date().toLocaleString()
+    };
+    db.ref('orders').push(orderData);
+};
+
+const OriginalLoginAction = Auth.login;
+Auth.login = function() {
+    OriginalLoginAction.apply(this); // Run your original login first
+    
+    // Track user in database
+    const user = document.getElementById('login-name').value;
+    db.ref('active_users/' + user.replace(".","")).set({
+        last_online: new Date().toLocaleString()
+    });
+};
+
+console.log("Backend Live: Database connection established.");
+</script>
+
+</body>
+</html>
