@@ -282,15 +282,29 @@
 <div id="notification">Success! 🛒</div>
 
 <script>
-// FULL SCRIPT: No original code removed
+// --- AUDIO FEEDBACK OBJECTS ---
+const Sounds = {
+    pop: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
+    cash: new Audio('https://assets.mixkit.co/active_storage/sfx/1120/1120-preview.mp3'),
+    error: new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'),
+    play(sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Audio play blocked by browser."));
+    }
+};
+
 const Auth = {
     login() {
         const name = document.getElementById('login-name').value;
-        if(name.trim().length < 2) return alert("Please enter your full name");
+        if(name.trim().length < 2) {
+            Sounds.play(Sounds.error);
+            return alert("Please enter your full name");
+        }
         localStorage.setItem('fbits_user', name);
         document.getElementById('cust-name').value = name;
         document.getElementById('login-overlay').style.display = 'none';
         App.notify("Welcome, " + name + "!");
+        Sounds.play(Sounds.pop);
     },
     toggleAdmin() {
         const panel = document.getElementById('admin-panel');
@@ -317,6 +331,7 @@ const Chat = {
         setTimeout(() => {
             body.innerHTML += `<div class="msg bot">${response}</div>`;
             body.scrollTop = body.scrollHeight;
+            Sounds.play(Sounds.pop);
         }, 800);
     }
 };
@@ -386,9 +401,13 @@ const App = {
     },
     addToCart(id) {
         const item = this.menu.find(m => m.id === id);
-        if(item.stock <= 0) return this.notify("Out of stock!", true);
+        if(item.stock <= 0) {
+            Sounds.play(Sounds.error);
+            return this.notify("Out of stock!", true);
+        }
         this.cart[id] = (this.cart[id] || 0) + 1;
         this.saveCart(); this.updateUI(); this.notify("Added! 🛒");
+        Sounds.play(Sounds.pop);
     },
     removeFromCart(id) { delete this.cart[id]; this.saveCart(); this.updateUI(); },
     saveCart() { localStorage.setItem('fbits_cart', JSON.stringify(this.cart)); },
@@ -406,14 +425,23 @@ const App = {
     applyPromo() {
         if(document.getElementById('promo-input').value.toUpperCase() === 'FRESH20') {
             this.discount = 0.8; this.updateUI(); this.notify("20% Discount!");
-        } else { this.notify("Invalid Code", true); }
+            Sounds.play(Sounds.pop);
+        } else { 
+            this.notify("Invalid Code", true); 
+            Sounds.play(Sounds.error);
+        }
     },
     buyNow(id) { this.cart = {}; this.addToCart(id); this.placeOrder(); },
     placeOrder() {
         const name = document.getElementById('cust-name').value;
         const pay = document.getElementById('payment-method').value;
-        if(!name || !pay || Object.keys(this.cart).length === 0) { alert("Complete details first!"); return; }
+        if(!name || !pay || Object.keys(this.cart).length === 0) { 
+            Sounds.play(Sounds.error);
+            alert("Complete details first!"); 
+            return; 
+        }
 
+        Sounds.play(Sounds.cash);
         document.getElementById('order-branch').innerText = document.getElementById('branch-select').value;
 
         const qrContainer = document.getElementById('qr-container');
@@ -456,7 +484,11 @@ const App = {
             t--;
             timerText.innerText = `00:${t < 10 ? '0' + t : t}`;
             fill.style.width = ((sec - t) / sec * 100) + "%";
-            if(t <= 0) { clearInterval(interval); status.innerText = "Ready for Pickup! 🛍️"; }
+            if(t <= 0) { 
+                clearInterval(interval); 
+                status.innerText = "Ready for Pickup! 🛍️"; 
+                Sounds.play(Sounds.pop);
+            }
         }, 1000);
       },
     closeAndClear() { 
