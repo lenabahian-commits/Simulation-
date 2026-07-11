@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fresh Bites Kitchen Pickup - Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #10b981;
@@ -33,9 +33,9 @@
         }
 
         * { box-sizing: border-box; transition: background 0.4s ease, color 0.4s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; padding-bottom: 70px; }
 
-        /* --- ADDED LOGIN OVERLAY --- */
+        /* Login Overlay */
         #login-overlay { 
             position: fixed; 
             inset: 0; 
@@ -57,7 +57,6 @@
             text-align: center; 
         }
         .login-card h2 { color: var(--primary); margin-bottom: 10px; }
-        /* --------------------------- */
 
         /* Navigation */
         .navbar { background: var(--white); backdrop-filter: blur(12px); padding: 1.2rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 15px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
@@ -65,6 +64,15 @@
         .logo { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
 
         .theme-switch { cursor: pointer; padding: 8px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; border: none; }
+
+        /* Shopee Navigation Tabs */
+        .shopee-navigation-tabs { display: flex; justify-content: center; background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 75px; z-index: 999; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .shopee-tab-item { flex: 1; max-width: 250px; text-align: center; padding: 1.2rem 0; font-weight: 700; cursor: pointer; color: var(--text); border-bottom: 4px solid transparent; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 1rem; }
+        .shopee-tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        /* Shopee Views Toggle */
+        .shopee-view-section { display: none; }
+        .shopee-view-section.active { display: block; }
 
         .container { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; }
 
@@ -81,35 +89,52 @@
         .cat-btn { padding: 0.8rem 1.5rem; border-radius: 99px; border: 1px solid var(--border); background: var(--white); cursor: pointer; white-space: nowrap; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 8px 15px rgba(16, 185, 129, 0.2); }
 
-        /* Main Layout */
-        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 2.5rem; }
-        @media(max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
+        /* Shopee Layout: Cart Items Box + Checkout Summary Panel */
+        .shopee-cart-layout { display: grid; grid-template-columns: 1fr 420px; gap: 2.5rem; align-items: start; }
+        @media(max-width: 1100px) { .shopee-cart-layout { grid-template-columns: 1fr; } }
 
-        .food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.8rem; }
-        .food-card { background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; }
-        .food-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .food-img-wrap { height: 180px; overflow: hidden; position: relative; background: #eee; cursor: zoom-in; }
+        /* Shopee 2-Column Responsive Layout Style */
+        .food-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+        }
+        @media(min-width: 768px) {
+            .food-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.8rem; }
+        }
+
+        .food-card { background: var(--card-bg); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        .food-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .food-img-wrap { width: 100%; aspect-ratio: 1/1; overflow: hidden; position: relative; background: #eee; cursor: zoom-in; }
         .food-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         
-        .card-content { padding: 1.2rem; }
+        .card-content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+        .card-content h3 { font-size: 1rem; margin: 8px 0; line-height: 1.3; }
         .rating { color: var(--accent); font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
-        .stock-tag { font-size: 0.7rem; font-weight: 800; color: var(--primary); background: var(--primary-soft); padding: 4px 10px; border-radius: 6px; margin: 8px 0; display: inline-block; }
-        .sold-out-badge { position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 0.7rem; }
+        .stock-tag { font-size: 0.7rem; font-weight: 800; color: var(--primary); background: var(--primary-soft); padding: 4px 10px; border-radius: 6px; margin: 8px 0; display: inline-block; width: max-content; }
+        .sold-out-badge { position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 0.7rem; z-index: 10; }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .btn { padding: 0.8rem; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: auto; }
+        .btn { padding: 0.6rem; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.85rem; }
         .btn-add { background: var(--primary); color: white; }
         .btn-buy { background: #f1f5f9; color: #1f2937; }
         .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* Sidebar */
-        .cart-sidebar { background: #1e293b; color: white; padding: 2rem; border-radius: 32px; position: sticky; top: 100px; max-height: 85vh; display: flex; flex-direction: column; }
-        .cart-list { list-style: none; padding: 0; margin: 1.5rem 0; overflow-y: auto; flex-grow: 1; }
-        .cart-item { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; background: rgba(255,255,255,0.08); padding: 10px; border-radius: 16px; position: relative; }
-        .cart-item img { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; }
-        .remove-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--danger); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; }
+        /* Shopee Cart Display List styling */
+        .cart-main-container { background: var(--card-bg); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow); min-height: 300px; }
+        .cart-list { list-style: none; padding: 0; margin: 0; }
+        .cart-item { display: flex; align-items: center; gap: 1.5rem; padding: 15px; border-bottom: 1px solid var(--border); background: var(--white); border-radius: var(--radius-md); margin-bottom: 12px; border: 1px solid var(--border); position: relative; }
+        .cart-item img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; }
+        .cart-item-info { flex: 1; }
+        .cart-item-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 4px; color: var(--text); }
+        .cart-item-price { color: var(--primary); font-weight: 800; font-size: 0.95rem; }
+        .remove-btn { background: var(--danger); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .remove-btn:hover { background: #dc2626; transform: scale(1.1); }
         
-        .sidebar-input { width: 100%; padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; margin-bottom: 15px; outline: none; }
+        /* Sidebar/Checkout Panel */
+        .cart-sidebar { background: #1e293b; color: white; padding: 2rem; border-radius: var(--radius-lg); position: sticky; top: 160px; box-shadow: var(--shadow); }
+        .sidebar-input { width: 100%; padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; margin-bottom: 15px; outline: none; font-family: inherit; }
+        .sidebar-input::placeholder { color: #94a3b8; }
         .total-row { display: flex; justify-content: space-between; font-size: 1.8rem; font-weight: 800; color: var(--accent); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
 
         /* Admin & Dashboard */
@@ -117,7 +142,7 @@
         .stat-card { background: var(--primary-soft); padding: 20px; border-radius: 15px; text-align: center; }
 
         /* Chatbot Widget */
-        .chat-widget { position: fixed; bottom: 25px; right: 25px; z-index: 3000; }
+        .chat-widget { position: fixed; bottom: 85px; right: 25px; z-index: 3000; }
         .chat-btn { width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; font-size: 1.5rem; }
         .chat-window { position: absolute; bottom: 75px; right: 0; width: 320px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--border); }
         .chat-window.active { display: flex; }
@@ -140,13 +165,89 @@
         .progress-bar { height: 10px; background: var(--border); border-radius: 10px; overflow: hidden; margin: 20px 0; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 1s linear; }
 
-        #notification { position: fixed; top: 30px; right: 30px; background: var(--primary); color: white; padding: 15px 30px; border-radius: 15px; transform: translateX(250%); z-index: 4000; font-weight: bold; }
+        #notification { position: fixed; top: 30px; right: 30px; background: var(--primary); color: white; padding: 15px 30px; border-radius: 15px; transform: translateX(250%); z-index: 4000; font-weight: bold; box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
         #notification.show { transform: translateX(0); }
 
         .img-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; cursor: pointer; }
         .img-viewer img { max-width: 90%; max-height: 80%; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: 0.3s; }
         .img-viewer.active { display: flex; }
         .img-viewer.active img { transform: scale(1); }
+
+        /* Shopee Style Bottom Navigation Bar */
+        .shopee-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 2500;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .shopee-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex: 1;
+            height: 100%;
+            gap: 4px;
+        }
+        .shopee-nav-item.active {
+            color: var(--primary);
+        }
+        .shopee-nav-icon {
+            font-size: 1.35rem;
+            position: relative;
+        }
+        .shopee-badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 99px;
+            font-weight: 800;
+        }
+        
+        /* Profile View Section styling */
+        .profile-card { background: var(--card-bg); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow); text-align: center; }
+        .profile-avatar { width: 90px; height: 90px; background: var(--primary-soft); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 15px auto; font-weight: 800; border: 3px solid var(--primary); }
+
+        /* Vouchers, Map Info, Notification Center STYLES */
+        .shopee-vouchers-container { margin-top: 20px; text-align: left; }
+        .voucher-card { background: var(--primary-soft); border: 1px dashed var(--primary); border-radius: 10px; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; cursor: pointer; }
+        .branch-map-box { background: var(--primary-soft); border-radius: 12px; padding: 12px; font-size: 0.8rem; margin-top: 8px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 8px; }
+        .notif-bell-container { position: relative; margin-right: 15px; cursor: pointer; font-size: 1.3rem; }
+        .notif-bell-badge { position: absolute; top: -4px; right: -4px; background: var(--danger); width: 8px; height: 8px; border-radius: 50%; display: none; }
+        .notif-dropdown { display: none; position: absolute; top: 45px; right: 0; width: 280px; background: var(--card-bg); border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 12px; padding: 10px; z-index: 3100; font-size: 0.8rem; text-align: left; }
+        .notif-dropdown h4 { margin: 0 0 8px 0; color: var(--primary); padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+        .notif-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+        .notif-item { padding: 6px; border-radius: 6px; background: var(--bg); border-left: 3px solid var(--primary); }
+
+        /* FEAT 1 & 4 & 5 STYLES (Sort UI, Lucky Spin Wheel, Status Timeline) */
+        .sort-select-box { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.85rem; font-weight: 700; color: var(--text); background: var(--card-bg); cursor: pointer; outline: none; }
+        
+        .spin-section-box { margin-top: 20px; border: 1px solid var(--border); padding: 15px; border-radius: var(--radius-md); background: var(--card-bg); text-align: center; }
+        .wheel-container-wrapper { width: 100px; height: 100px; position: relative; margin: 10px auto; border-radius: 50%; border: 4px solid var(--primary); overflow: hidden; transition: transform 3s ease-out; background: conic-gradient(var(--primary) 0deg 90deg, var(--accent) 90deg 180deg, var(--danger) 180deg 270deg, #3b82f6 270deg 360deg); }
+        
+        .timeline-tracker { display: flex; justify-content: space-between; position: relative; margin: 20px 0 10px 0; padding: 0 10px; }
+        .timeline-tracker::before { content: ''; position: absolute; top: 12px; left: 10%; right: 10%; height: 3px; background: var(--border); z-index: 1; }
+        .timeline-progress-line { position: absolute; top: 12px; left: 10%; width: 0%; height: 3px; background: var(--primary); z-index: 2; transition: width 1s linear; }
+        .timeline-step { display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; font-weight: 800; color: #94a3b8; position: relative; z-index: 3; }
+        .timeline-dot { width: 26px; height: 26px; border-radius: 50%; background: var(--white); border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-bottom: 4px; color: #94a3b8; }
+        .timeline-step.active .timeline-dot { border-color: var(--primary); background: var(--primary); color: white; }
+        .timeline-step.active { color: var(--primary); }
     </style>
 </head>
 <body>
@@ -167,8 +268,24 @@
         <div class="logo">FRESH BITES <span style="font-weight: 400; color: #94a3b8;">KITCHEN</span></div>
         <button class="theme-switch" onclick="App.toggleTheme()" id="themeBtn">🌙</button>
     </div>
-    <div id="item-count" style="background: var(--primary); color: white; padding: 8px 20px; border-radius: 99px; font-weight: 800;">0 ITEMS</div>
+    <div style="display: flex; align-items: center;">
+        <div class="notif-bell-container" onclick="App.toggleNotifMenu(event)">
+            🔔<span class="notif-bell-badge" id="bell-badge"></span>
+            <div class="notif-dropdown" id="notif-box">
+                <h4>Notifications</h4>
+                <div class="notif-list" id="notif-feed">
+                    <div style="color:#94a3b8; text-align:center; padding:10px;">No new notifications</div>
+                </div>
+            </div>
+        </div>
+        <div id="item-count" style="background: var(--primary); color: white; padding: 8px 20px; border-radius: 99px; font-weight: 800; cursor:pointer;" onclick="App.switchShopeeView('cart')">0 ITEMS</div>
+    </div>
 </nav>
+
+<div class="shopee-navigation-tabs" id="top-tabs-bar">
+    <div class="shopee-tab-item active" id="tab-home" onclick="App.switchShopeeView('home')">🏠 Home Menu</div>
+    <div class="shopee-tab-item" id="tab-cart" onclick="App.switchShopeeView('cart')">🛒 My Cart</div>
+</div>
 
 <div class="container">
     <div id="admin-panel">
@@ -181,62 +298,159 @@
         <button class="btn btn-buy" onclick="Auth.toggleAdmin()">Close Admin</button>
     </div>
 
-    <div class="top-section">
-        <input type="text" class="search-bar" id="search" placeholder="Search menu...">
-        
-        <div style="margin-bottom: 15px;">
-            <label>📍 Select Branch:</label>
-            <select id="branch-select" class="sidebar-input" style="width:200px; display:inline-block; margin-left:10px; color:var(--text)">
-                <option>Moises Padilla</option>
-                <option>La Castellana</option>
-                <option>Bacolod City</option>
-            </select>
+    <!-- SHOPEE HOME VIEW -->
+    <div id="shopee-home-view" class="shopee-view-section active">
+        <div class="top-section">
+            <input type="text" class="search-bar" id="search" placeholder="Search menu...">
+            
+            <div style="margin-bottom: 15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <label>📍 Select Branch:</label>
+                    <select id="branch-select" class="sidebar-input" style="width:200px; display:inline-block; margin-left:10px; color:var(--text); background: var(--card-bg); border: 1px solid var(--border);" onchange="App.updateBranchMap(this.value)">
+                        <option>Moises Padilla</option>
+                        <option>La Castellana</option>
+                        <option>Bacolod City</option>
+                    </select>
+                </div>
+                
+                <!-- FEAT 1: Shopee-Style Advanced Sort Dropdown -->
+                <div>
+                    <label> Sort By: </label>
+                    <select id="sort-select" class="sort-select-box" onchange="App.handleMenuSort()">
+                        <option value="default">✨ Default Menu</option>
+                        <option value="low-high">💵 Price: Low to High</option>
+                        <option value="high-low">💰 Price: High to Low</option>
+                        <option value="rating">⭐ Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Branch Map Info -->
+            <div class="branch-map-box" id="branch-map-info" style="margin-bottom:15px;">
+                🗺️ <b>Branch Address:</b> Public Market, Moises Padilla, Philippines (Open 8 AM - 9 PM)
+            </div>
+
+            <div class="filters" id="cat-filters">
+                <button class="cat-btn active" data-cat="All">📋 All</button>
+                <button class="cat-btn" data-cat="Pizza">🍕 Pizza</button>
+                <button class="cat-btn" data-cat="Burgers">🍔 Burgers</button>
+                <button class="cat-btn" data-cat="Pasta">🍝 Pasta</button>
+                <button class="cat-btn" data-cat="Salads">🥗 Salads</button>
+                <button class="cat-btn" data-cat="Sides">🍟 Sides</button>
+                <button class="cat-btn" data-cat="Desserts">🍰 Desserts</button>
+                <button class="cat-btn" data-cat="Drinks">🥤 Drinks</button>
+            </div>
         </div>
 
-        <div class="filters" id="cat-filters">
-            <button class="cat-btn active" data-cat="All">📋 All</button>
-            <button class="cat-btn" data-cat="Pizza">🍕 Pizza</button>
-            <button class="cat-btn" data-cat="Burgers">🍔 Burgers</button>
-            <button class="cat-btn" data-cat="Pasta">🍝 Pasta</button>
-            <button class="cat-btn" data-cat="Salads">🥗 Salads</button>
-            <button class="cat-btn" data-cat="Sides">🍟 Sides</button>
-            <button class="cat-btn" data-cat="Desserts">🍰 Desserts</button>
-            <button class="cat-btn" data-cat="Drinks">🥤 Drinks</button>
+        <div class="food-grid" id="menu"></div>
+    </div>
+
+    <!-- SHOPEE CART & CHECKOUT VIEW -->
+    <div id="shopee-cart-view" class="shopee-view-section">
+        <div class="shopee-cart-layout">
+            <div class="cart-main-container">
+                <h2 style="margin-top: 0; color: var(--primary);">Shopping Bag</h2>
+                <hr style="border: 0; border-top: 1px solid var(--border); margin-bottom: 20px;">
+                <ul class="cart-list" id="cart-items"></ul>
+
+                <!-- FEAT 2: Item Customization Notes / Remarks box area -->
+                <div style="margin-top:15px; padding:12px; background:var(--bg); border-radius:10px; border:1px solid var(--border);">
+                    <h4 style="margin:0 0 6px 0; font-size:0.85rem;">📝 Kitchen Prep Notes / Remarks</h4>
+                    <input type="text" id="order-remarks-input" class="sidebar-input" style="background:var(--white); color:var(--text); border:1px solid var(--border); margin:0;" placeholder="Example: No onions / Extra sauce / Separated syrup...">
+                </div>
+
+                <!-- Available Store Vouchers -->
+                <div class="shopee-vouchers-container">
+                    <h3 style="color: var(--text); margin-bottom: 10px; font-size: 1rem;">🎟️ Available Store Vouchers</h3>
+                    <div class="voucher-card" onclick="App.claimVoucherCode('FRESH20')">
+                        <div>
+                            <b style="color: var(--primary);">FRESH20</b><br>
+                            <span style="font-size:0.75rem; color:#64748b;">Get 20% Discount total order</span>
+                        </div>
+                        <button class="btn btn-add" style="padding: 5px 12px; font-size: 0.75rem;">Use</button>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="cart-sidebar">
+                <h2 style="margin: 0 0 1rem 0;">Checkout</h2>
+                <input type="text" id="cust-name" class="sidebar-input" placeholder="Your Full Name">
+                <select id="pickup-time" class="sidebar-input">
+                    <option value="">Pickup Time</option>
+                    <option value="ASAP (10-15 mins)">ASAP (10-15 mins)</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                </select>
+                <select id="payment-method" class="sidebar-input" onchange="App.handlePaymentChange(this.value)">
+                    <option value="">Payment Method</option>
+                    <option value="💵 Cash">💵 Cash</option>
+                    <option value="🔵 GCash">🔵 GCash</option>
+                    <option value="🟢 Maya">🟢 Maya</option>
+                    <option value="🟦 PayPal">🟦 PayPal</option>
+                </select>
+                
+                <div id="proof-upload" style="display:none; margin-bottom:15px;">
+                    <label style="font-size:0.7rem">Upload Proof of Payment:</label>
+                    <input type="file" class="sidebar-input" style="font-size:0.7rem">
+                </div>
+
+                <div style="display:flex; gap:5px; margin-bottom:15px">
+                    <input type="text" id="promo-input" placeholder="Promo Code" class="sidebar-input" style="margin:0; flex:1">
+                    <button onclick="App.applyPromo()" style="background:var(--accent); border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:800;">Apply</button>
+                </div>
+                <div class="total-row"><span>Total</span><span id="grand-total">$0.00</span></div>
+                <button class="btn" style="background: var(--primary); color: white; width: 100%; margin-top: 20px;" onclick="App.placeOrder()">PLACE ORDER</button>
+            </aside>
         </div>
     </div>
 
-    <div class="main-layout">
-        <div class="food-grid" id="menu"></div>
-        <aside class="cart-sidebar">
-            <h2 style="margin: 0 0 1rem 0;">Checkout</h2>
-            <input type="text" id="cust-name" class="sidebar-input" placeholder="Your Full Name">
-            <select id="pickup-time" class="sidebar-input">
-                <option value="">Pickup Time</option>
-                <option value="ASAP (10-15 mins)">ASAP (10-15 mins)</option>
-                <option value="12:00 PM">12:00 PM</option>
-                <option value="1:00 PM">1:00 PM</option>
-            </select>
-            <select id="payment-method" class="sidebar-input" onchange="App.handlePaymentChange(this.value)">
-                <option value="">Payment Method</option>
-                <option value="💵 Cash">💵 Cash</option>
-                <option value="🔵 GCash">🔵 GCash</option>
-                <option value="🟢 Maya">🟢 Maya</option>
-                <option value="🟦 PayPal">🟦 PayPal</option>
-            </select>
-            
-            <div id="proof-upload" style="display:none; margin-bottom:15px;">
-                <label style="font-size:0.7rem">Upload Proof of Payment:</label>
-                <input type="file" class="sidebar-input" style="font-size:0.7rem">
-            </div>
+    <!-- SHOPEE PROFILE VIEW -->
+    <div id="shopee-profile-view" class="shopee-view-section">
+        <div class="profile-card">
+            <div class="profile-avatar" id="profile-avatar-letter">U</div>
+            <h2 id="profile-display-name" style="margin: 10px 0 5px 0; color: var(--text);">User Name</h2>
+            <p style="color: #64748b; margin-bottom: 25px;">Verified Kitchen Customer</p>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin-bottom: 20px;">
+            <div style="text-align: left; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;">
+                <div><b>Role:</b> Account Customer</div>
+                <div><b>App Version:</b> Fresh Bites Pro v2.5</div>
+                
+                <!-- FEAT 4: Shopee Style Lucky Daily Reward Spin Wheel -->
+                <div class="spin-section-box">
+                    <h4 style="margin:0; font-size:0.85rem; color:var(--primary);">🎰 Daily Spin & Win Voucher</h4>
+                    <div class="wheel-container-wrapper" id="lucky-wheel"></div>
+                    <button class="btn btn-add" style="padding:6px 14px; font-size:0.75rem; margin:5px auto 0 auto;" onclick="App.spinLuckyRewardWheel()">SPIN NOW</button>
+                </div>
 
-            <ul class="cart-list" id="cart-items"></ul>
-            <div style="display:flex; gap:5px; margin-bottom:15px">
-                <input type="text" id="promo-input" placeholder="Promo Code" class="sidebar-input" style="margin:0; flex:1">
-                <button onclick="App.applyPromo()" style="background:var(--accent); border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:800;">Apply</button>
+                <!-- Purchases Order History List -->
+                <div style="margin-top: 10px;">
+                    <h3 style="font-size:0.95rem; color:var(--primary); margin-bottom:8px;">🧾 My Purchases History</h3>
+                    <div id="order-history-feed" style="max-height: 150px; overflow-y:auto; border:1px solid var(--border); padding:8px; border-radius:8px; background:var(--bg); font-size:0.8rem; display:flex; flex-direction:column; gap:5px;">
+                        <span style="color:#94a3b8;">No past checkouts found.</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-buy" style="width: 100%; background: var(--danger); color: white; margin-top: 10px;" onclick="localStorage.removeItem('fbits_user'); localStorage.removeItem('fbits_history'); location.reload();">Logout Account</button>
             </div>
-            <div class="total-row"><span>Total</span><span id="grand-total">$0.00</span></div>
-            <button class="btn" style="background: var(--primary); color: white; width: 100%; margin-top: 20px;" onclick="App.placeOrder()">PLACE ORDER</button>
-        </aside>
+        </div>
+    </div>
+</div>
+
+<!-- Shopee Style Bottom Navigation Menu Bar -->
+<div class="shopee-bottom-nav">
+    <div class="shopee-nav-item active" id="bot-nav-home" onclick="App.switchShopeeView('home')">
+        <div class="shopee-nav-icon">🏠</div>
+        <div>Home</div>
+    </div>
+    <div class="shopee-nav-item" id="bot-nav-cart" onclick="App.switchShopeeView('cart')">
+        <div class="shopee-nav-icon">
+            🛒<span class="shopee-badge" id="bot-cart-badge" style="display:none;">0</span>
+        </div>
+        <div>Cart</div>
+    </div>
+    <div class="shopee-nav-item" id="bot-nav-profile" onclick="App.switchShopeeView('profile')">
+        <div class="shopee-nav-icon">👤</div>
+        <div>Profile</div>
     </div>
 </div>
 
@@ -261,6 +475,23 @@
         <h2 id="status-title">Preparing Order...</h2>
         <div id="order-id-display" style="color:var(--primary); font-weight:800;"></div>
         
+        <!-- FEAT 5: Order Step Timeline Tracker -->
+        <div class="timeline-tracker">
+            <div class="timeline-progress-line" id="timeline-bar"></div>
+            <div class="timeline-step active" id="step-placed">
+                <div class="timeline-dot">✓</div>
+                <div>Placed</div>
+            </div>
+            <div class="timeline-step" id="step-kitchen">
+                <div class="timeline-dot">👨‍🍳</div>
+                <div>Kitchen</div>
+            </div>
+            <div class="timeline-step" id="step-ready">
+                <div class="timeline-dot">🛍️</div>
+                <div>Ready</div>
+            </div>
+        </div>
+
         <div class="qr-section" id="qr-container">
             <div id="qr-title" style="font-weight:800; margin-bottom:5px;">Scan to Pay</div>
             <img id="qr-img" src="" class="qr-image">
@@ -282,14 +513,13 @@
 <div id="notification">Success! 🛒</div>
 
 <script>
-// --- AUDIO FEEDBACK OBJECTS ---
 const Sounds = {
     pop: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
     cash: new Audio('https://assets.mixkit.co/active_storage/sfx/1120/1120-preview.mp3'),
     error: new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'),
     play(sound) {
         sound.currentTime = 0;
-        sound.play().catch(e => console.log("Audio play blocked by browser."));
+        sound.play().catch(e => console.log("Audio waiting for user gesture."));
     }
 };
 
@@ -303,8 +533,13 @@ const Auth = {
         localStorage.setItem('fbits_user', name);
         document.getElementById('cust-name').value = name;
         document.getElementById('login-overlay').style.display = 'none';
+        
+        document.getElementById('profile-display-name').innerText = name;
+        document.getElementById('profile-avatar-letter').innerText = name.charAt(0).toUpperCase();
+        
         App.notify("Welcome, " + name + "!");
         Sounds.play(Sounds.pop);
+        App.renderOrderHistory();
     },
     toggleAdmin() {
         const panel = document.getElementById('admin-panel');
@@ -339,6 +574,8 @@ const Chat = {
 const App = {
     totalRevenue: 0,
     totalOrders: 0,
+    activeInterval: null,
+    isWheelSpinning: false,
     menu: [
         { id:1, name:"Margherita Pizza", price:150, cat:"Pizza", stock: 10, image:"https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=400", rating: "4.9"},
         { id:2, name:"Pepperoni Pizza", price:180, cat:"Pizza", stock: 5, image:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400", rating: "4.8"},
@@ -350,13 +587,16 @@ const App = {
         { id:7, name:"Iced Latte", price:85, cat:"Drinks", stock: 20, image:"https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=400", rating: "4.7"}
     ],
     cart: JSON.parse(localStorage.getItem('fbits_cart')) || {}, 
-    discount: 1, theme: 'light',
+    discount: 1, theme: 'light', lastOrderId: '',
     init() {
         if(localStorage.getItem('fbits_user')) {
+            const storedName = localStorage.getItem('fbits_user');
             document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('cust-name').value = localStorage.getItem('fbits_user');
+            document.getElementById('cust-name').value = storedName;
+            document.getElementById('profile-display-name').innerText = storedName;
+            document.getElementById('profile-avatar-letter').innerText = storedName.charAt(0).toUpperCase();
         }
-        this.renderMenu(); this.updateUI();
+        this.renderMenu(); this.updateUI(); this.renderOrderHistory();
         document.getElementById('cat-filters').addEventListener('click', (e) => {
             if(e.target.classList.contains('cat-btn')) {
                 document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -365,6 +605,32 @@ const App = {
             }
         });
         document.getElementById('search').addEventListener('input', (e) => this.renderMenu('All', e.target.value));
+        
+        document.addEventListener('click', () => {
+            document.getElementById('notif-box').style.display = 'none';
+        });
+    },
+    switchShopeeView(view) {
+        document.querySelectorAll('.shopee-view-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.shopee-tab-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.shopee-nav-item').forEach(el => el.classList.remove('active'));
+        
+        if(view === 'home') {
+            document.getElementById('shopee-home-view').classList.add('active');
+            document.getElementById('tab-home').classList.add('active');
+            document.getElementById('bot-nav-home').classList.add('active');
+            document.getElementById('top-tabs-bar').style.display = 'flex';
+        } else if(view === 'cart') {
+            document.getElementById('shopee-cart-view').classList.add('active');
+            document.getElementById('tab-cart').classList.add('active');
+            document.getElementById('bot-nav-cart').classList.add('active');
+            document.getElementById('top-tabs-bar').style.display = 'flex';
+            this.updateUI(); 
+        } else if(view === 'profile') {
+            document.getElementById('shopee-profile-view').classList.add('active');
+            document.getElementById('bot-nav-profile').classList.add('active');
+            document.getElementById('top-tabs-bar').style.display = 'none';
+        }
     },
     handlePaymentChange(val) {
         document.getElementById('proof-upload').style.display = (val.includes("GCash") || val.includes("Maya")) ? 'block' : 'none';
@@ -374,24 +640,45 @@ const App = {
         document.documentElement.setAttribute('data-theme', this.theme);
         document.getElementById('themeBtn').innerText = this.theme === 'light' ? '🌙' : '☀️';
     },
-    renderMenu(cat = 'All', q = '') {
+    renderMenu(cat = 'All', q = '', sortOption = 'default') {
         const grid = document.getElementById('menu');
-        const filtered = this.menu.filter(i => (cat === 'All' || i.cat === cat) && i.name.toLowerCase().includes(q.toLowerCase()));
+        let filtered = this.menu.filter(i => (cat === 'All' || i.cat === cat) && i.name.toLowerCase().includes(q.toLowerCase()));
+        
+        // FEAT 1: Apply array sort functionality without destroying core arrays
+        if(sortOption === 'low-high') {
+            filtered.sort((a,b) => a.price - b.price);
+        } else if(sortOption === 'high-low') {
+            filtered.sort((a,b) => b.price - a.price);
+        } else if(sortOption === 'rating') {
+            filtered.sort((a,b) => parseFloat(b.rating) - parseFloat(a.rating));
+        }
+
         grid.innerHTML = filtered.map(i => `
             <div class="food-card">
                 ${i.stock <= 0 ? '<div class="sold-out-badge">SOLD OUT</div>' : ''}
                 <div class="food-img-wrap" onclick="App.viewImage('${i.image}')"><img src="${i.image}" class="food-img"></div>
                 <div class="card-content">
-                    <div class="rating">⭐ ${i.rating} | ${i.cat}</div>
-                    <span class="stock-tag">Stock: ${i.stock}</span>
-                    <h3>${i.name}</h3>
-                    <div style="color:var(--primary); font-weight:800; margin:8px 0">$${i.price.toFixed(2)}</div>
-                    <div class="btn-group">
-                        <button class="btn btn-add" ${i.stock <= 0 ? 'disabled' : ''} onclick="App.addToCart(${i.id})">Add</button>
-                        <button class="btn btn-buy" ${i.stock <= 0 ? 'disabled' : ''} onclick="App.buyNow(${i.id})">Buy</button>
+                    <div>
+                        <div class="rating">⭐ ${i.rating} | ${i.cat}</div>
+                        <div style="font-size:0.65rem; color:var(--primary); cursor:pointer; font-weight:700; margin:2px 0;" onclick="App.alertProductReview('${i.name}')">💬 View Community Reviews</div>
+                        <span class="stock-tag">Stock: ${i.stock}</span>
+                        <h3>${i.name}</h3>
+                    </div>
+                    <div>
+                        <div style="color:var(--primary); font-weight:800; margin:8px 0; font-size:1.1rem;">$${i.price.toFixed(2)}</div>
+                        <div class="btn-group">
+                            <button class="btn btn-add" ${i.stock <= 0 ? 'disabled' : ''} onclick="App.addToCart(${i.id})">Add</button>
+                            <button class="btn btn-buy" ${i.stock <= 0 ? 'disabled' : ''} onclick="App.buyNow(${i.id})">Buy</button>
+                        </div>
                     </div>
                 </div>
             </div>`).join('');
+    },
+    handleMenuSort() {
+        const selectedSort = document.getElementById('sort-select').value;
+        const currentCat = document.querySelector('.cat-btn.active').dataset.cat;
+        const searchVal = document.getElementById('search').value;
+        this.renderMenu(currentCat, searchVal, selectedSort);
     },
     viewImage(url) {
         const viewer = document.getElementById('imgViewer');
@@ -406,21 +693,58 @@ const App = {
             return this.notify("Out of stock!", true);
         }
         this.cart[id] = (this.cart[id] || 0) + 1;
-        this.saveCart(); this.updateUI(); this.notify("Added! 🛒");
+        this.saveCart(); 
+        this.updateUI(); 
+        this.notify(`Added ${item.name}! 🛒`);
         Sounds.play(Sounds.pop);
     },
-    removeFromCart(id) { delete this.cart[id]; this.saveCart(); this.updateUI(); },
-    saveCart() { localStorage.setItem('fbits_cart', JSON.stringify(this.cart)); },
+    removeFromCart(id) { 
+        delete this.cart[id]; 
+        this.saveCart(); 
+        this.updateUI(); 
+    },
+    saveCart() { 
+        localStorage.setItem('fbits_cart', JSON.stringify(this.cart)); 
+    },
     updateUI() {
         const list = document.getElementById('cart-items');
         let total = 0, count = 0;
-        list.innerHTML = Object.entries(this.cart).map(([id, qty]) => {
-            const item = this.menu.find(m => m.id == id);
-            total += item.price * qty; count += qty;
-            return `<li class="cart-item"><img src="${item.image}"><div style="flex:1"><b>${item.name}</b><br>Qty: ${qty}</div><button class="remove-btn" onclick="App.removeFromCart(${id})">&times;</button></li>`;
-        }).join('');
+        
+        if (Object.keys(this.cart).length === 0) {
+            list.innerHTML = `
+                <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
+                    <p style="font-size: 3rem; margin: 0;">🛒</p>
+                    <p style="font-weight: 600; margin-top: 10px;">Your shopping bag is empty</p>
+                    <button class="btn btn-add" style="margin: 15px auto 0 auto; display: inline-block; padding: 10px 20px;" onclick="App.switchShopeeView('home')">Go Shop Food Now</button>
+                </div>`;
+        } else {
+            list.innerHTML = Object.entries(this.cart).map(([id, qty]) => {
+                const item = this.menu.find(m => m.id == id);
+                if(!item) return '';
+                total += item.price * qty; 
+                count += qty;
+                return `
+                    <li class="cart-item">
+                        <img src="${item.image}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">$${item.price.toFixed(2)} &times; ${qty}</div>
+                        </div>
+                        <button class="remove-btn" onclick="App.removeFromCart(${id})">&times;</button>
+                    </li>`;
+            }).join('');
+        }
+        
         document.getElementById('grand-total').innerText = `$${(total * this.discount).toFixed(2)}`;
         document.getElementById('item-count').innerText = `${count} ITEMS`;
+        
+        const badge = document.getElementById('bot-cart-badge');
+        if(count > 0) {
+            badge.innerText = count;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
     },
     applyPromo() {
         if(document.getElementById('promo-input').value.toUpperCase() === 'FRESH20') {
@@ -431,18 +755,25 @@ const App = {
             Sounds.play(Sounds.error);
         }
     },
-    buyNow(id) { this.cart = {}; this.addToCart(id); this.placeOrder(); },
+    buyNow(id) { 
+        this.cart = {}; 
+        this.addToCart(id); 
+        this.switchShopeeView('cart');
+    },
     placeOrder() {
         const name = document.getElementById('cust-name').value;
         const pay = document.getElementById('payment-method').value;
+        const branchSelected = document.getElementById('branch-select').value;
+        const remarks = document.getElementById('order-remarks-input').value; // FEAT 2
+        
         if(!name || !pay || Object.keys(this.cart).length === 0) { 
             Sounds.play(Sounds.error);
-            alert("Complete details first!"); 
+            alert("Complete details and add products first!"); 
             return; 
         }
 
         Sounds.play(Sounds.cash);
-        document.getElementById('order-branch').innerText = document.getElementById('branch-select').value;
+        document.getElementById('order-branch').innerText = branchSelected;
 
         const qrContainer = document.getElementById('qr-container');
         const qrImg = document.getElementById('qr-img');
@@ -454,7 +785,8 @@ const App = {
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
         }
       
-        document.getElementById('order-id-display').innerText = "Order ID: #FBK-" + Math.floor(Math.random()*9000);
+        this.lastOrderId = "FBK-" + Math.floor(Math.random()*9000);
+        document.getElementById('order-id-display').innerText = "Order ID: #" + this.lastOrderId;
         
         let sumHtml = '<b>Your Order:</b><br>';
         let sub = 0;
@@ -465,95 +797,159 @@ const App = {
             sub += item.price * qty;
         });
 
-        this.totalRevenue += (sub * this.discount);
+        // Add Notes into display panel if exists (FEAT 2)
+        if(remarks.trim().length > 0) {
+            sumHtml += `<div style="margin-top:8px; color:var(--danger); font-size:0.8rem;"><b>Notes:</b> "${remarks}"</div>`;
+        }
+
+        const exactFinalTotal = (sub * this.discount);
+        this.totalRevenue += exactFinalTotal;
         this.totalOrders++;
+        
         document.getElementById('adm-sales').innerText = `$${this.totalRevenue.toFixed(2)}`;
         document.getElementById('adm-orders').innerText = this.totalOrders;
+        document.getElementById('order-summary-list').innerHTML = sumHtml + `<br><b>Total Paid:</b> $${exactFinalTotal.toFixed(2)}`;
+        
+        let localHistory = JSON.parse(localStorage.getItem('fbits_history')) || [];
+        localHistory.push({
+            orderId: this.lastOrderId,
+            total: exactFinalTotal.toFixed(2),
+            branch: branchSelected,
+            date: new Date().toLocaleDateString()
+        });
+        localStorage.setItem('fbits_history', JSON.stringify(localHistory));
 
-        document.getElementById('order-summary-list').innerHTML = sumHtml + `<hr><b>Total: $${(sub*this.discount).toFixed(2)}</b>`;
         document.getElementById('orderModal').style.display = 'flex';
-        this.renderMenu(); 
-        this.runProcess(10);
-      },
-    runProcess(sec) {
-        let t = sec;
-        const fill = document.getElementById('p-fill');
-        const timerText = document.getElementById('timer');
-        const status = document.getElementById('status-title');
-        const interval = setInterval(() => {
-            t--;
-            timerText.innerText = `00:${t < 10 ? '0' + t : t}`;
-            fill.style.width = ((sec - t) / sec * 100) + "%";
-            if(t <= 0) { 
-                clearInterval(interval); 
-                status.innerText = "Ready for Pickup! 🛍️"; 
+        this.renderMenu();
+        this.startTimer(10);
+    },
+    startTimer(seconds) {
+        let timeLeft = seconds;
+        const timerEl = document.getElementById('timer');
+        const fillEl = document.getElementById('p-fill');
+        const titleEl = document.getElementById('status-title');
+        
+        // FEAT 5 elements Reset
+        const bar = document.getElementById('timeline-bar');
+        const stepKitchen = document.getElementById('step-kitchen');
+        const stepReady = document.getElementById('step-ready');
+        
+        bar.style.width = '0%';
+        stepKitchen.classList.remove('active');
+        stepReady.classList.remove('active');
+        titleEl.innerText = "Preparing Order...";
+        fillEl.style.width = '0%';
+        
+        this.activeInterval = setInterval(() => {
+            timeLeft--;
+            const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            const secs = String(timeLeft % 60).padStart(2, '0');
+            timerEl.innerText = `${mins}:${secs}`;
+            
+            const percentDone = ((seconds - timeLeft) / seconds) * 100;
+            fillEl.style.width = `${percentDone}%`;
+            
+            // FEAT 5: Timeline tracker updates real-time color lines
+            bar.style.width = `${percentDone * 0.8}%`; 
+            if(timeLeft <= 6) { stepKitchen.classList.add('active'); }
+
+            if (timeLeft <= 0) {
+                clearInterval(this.activeInterval);
+                titleEl.innerText = "Order Ready for Pickup! 🍔";
+                stepReady.classList.add('active'); // Final milestone state reached
                 Sounds.play(Sounds.pop);
+                App.pushLiveNotification(`Your order #${App.lastOrderId} is ready for collection at the branch!`);
             }
         }, 1000);
-      },
-    closeAndClear() { 
-        this.cart = {}; 
-        this.saveCart(); 
-        document.getElementById('orderModal').style.display = 'none';
-        this.updateUI();
     },
-    notify(msg) {
-        const n = document.getElementById('notification');
-        n.innerText = msg; n.classList.add('show');
-        setTimeout(() => n.classList.remove('show'), 2000);
+    closeAndClear() {
+        if(this.activeInterval) clearInterval(this.activeInterval);
+        this.cart = {};
+        this.saveCart();
+        this.updateUI();
+        this.renderOrderHistory();
+        document.getElementById('order-remarks-input').value = ''; // clear notes
+        document.getElementById('orderModal').style.display = 'none';
+        this.switchShopeeView('home');
+    },
+    notify(msg, isError = false) {
+        const notif = document.getElementById('notification');
+        notif.innerText = msg;
+        notif.style.background = isError ? 'var(--danger)' : 'var(--primary)';
+        notif.classList.add('show');
+        setTimeout(() => notif.classList.remove('show'), 3000);
+    },
+
+    alertProductReview(productName) {
+        alert(`⭐️ Shopee Verified Reviews for ${productName}:\n\n• User1203: "Super fresh at sarap pa ng pagkain!" (5/5)\n• Lena B.: "Highly recommended for pickup cravings." (5/5)`);
+    },
+    renderOrderHistory() {
+        const feed = document.getElementById('order-history-feed');
+        const history = JSON.parse(localStorage.getItem('fbits_history')) || [];
+        if(history.length === 0) {
+            feed.innerHTML = `<span style="color:#94a3b8;">No past checkouts found.</span>`;
+            return;
+        }
+        feed.innerHTML = history.map(h => `
+            <div style="padding:6px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
+                <span><b>#${h.orderId}</b> (${h.branch})</span>
+                <span style="color:var(--primary); font-weight:700;">$${h.total}</span>
+            </div>
+        `).join('');
+    },
+    claimVoucherCode(code) {
+        document.getElementById('promo-input').value = code;
+        this.applyPromo();
+    },
+    updateBranchMap(branchName) {
+        const mapText = document.getElementById('branch-map-info');
+        if(branchName.includes("Moises Padilla")) {
+            mapText.innerHTML = `🗺️ <b>Branch Address:</b> Public Market, Moises Padilla, Philippines (Open 8 AM - 9 PM)`;
+        } else if(branchName.includes("La Castellana")) {
+            mapText.innerHTML = `🗺️ <b>Branch Address:</b> Gomez Street, La Castellana (Beside Plaza Town Hall)`;
+        } else {
+            mapText.innerHTML = `🗺️ <b>Branch Address:</b> Lacson Street, Bacolod City (Near Lagoon Central)`;
+        }
+    },
+    toggleNotifMenu(e) {
+        e.stopPropagation();
+        const box = document.getElementById('notif-box');
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+        document.getElementById('bell-badge').style.display = 'none';
+    },
+    pushLiveNotification(textMsg) {
+        const container = document.getElementById('notif-feed');
+        const badge = document.getElementById('bell-badge');
+        
+        if(container.innerHTML.includes("No new notifications")) {
+            container.innerHTML = '';
+        }
+        
+        container.innerHTML = `<div class="notif-item">🔔 ${textMsg}</div>` + container.innerHTML;
+        badge.style.display = 'block';
+        this.notify("New Store Alert Received! 🔔");
+    },
+
+    /* FEAT 4: Shopee Gamified Reward Spin Helper */
+    spinLuckyRewardWheel() {
+        if(this.isWheelSpinning) return;
+        this.isWheelSpinning = true;
+        Sounds.play(Sounds.pop);
+        
+        const wheel = document.getElementById('lucky-wheel');
+        const randomDegrees = Math.floor(Math.random() * 360) + 1440; // Spin multiple rotations cleanly
+        wheel.style.transform = `rotate(${randomDegrees}deg)`;
+        
+        setTimeout(() => {
+            this.isWheelSpinning = false;
+            document.getElementById('promo-input').value = "FRESH20";
+            this.applyPromo();
+            alert("🎰 Congratulations! You won the 'FRESH20' 20% Discount voucher! Auto-applied to your checkout tab.");
+        }, 3000);
     }
 };
-App.init();
+
+window.onload = () => App.init();
 </script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<script>
-// Backend Configuration
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "fresh-bites-kitchen.firebaseapp.com",
-    databaseURL: "https://fresh-bites-kitchen-default-rtdb.firebaseio.com",
-    projectId: "fresh-bites-kitchen",
-    storageBucket: "fresh-bites-kitchen.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef12345"
-};
-
-// Initialize Backend
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-// Injecting Database Logic into your existing functions
-const OriginalOrder = App.placeOrder;
-App.placeOrder = function() {
-    OriginalOrder.apply(this); // Run your original code first
-
-    // Save to Database
-    const orderData = {
-        name: document.getElementById('cust-name').value,
-        branch: document.getElementById('branch-select').value,
-        items: this.cart,
-        total: document.getElementById('grand-total').innerText,
-        date: new Date().toLocaleString()
-    };
-    db.ref('orders').push(orderData);
-};
-
-const OriginalLoginAction = Auth.login;
-Auth.login = function() {
-    OriginalLoginAction.apply(this); // Run your original login first
-    
-    // Track user in database
-    const user = document.getElementById('login-name').value;
-    db.ref('active_users/' + user.replace(".","")).set({
-        last_online: new Date().toLocaleString()
-    });
-};
-
-console.log("Backend Live: Database connection established.");
-</script>
-
 </body>
 </html>
